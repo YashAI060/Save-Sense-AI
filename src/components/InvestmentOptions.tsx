@@ -1,13 +1,119 @@
 
 import { useState } from 'react';
-import { TrendingUp, Building, Coins, Clock, Target, Info } from 'lucide-react';
+import { TrendingUp, Building, Coins, Clock, Target, Info, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 export const InvestmentOptions = () => {
   const [activeCategory, setActiveCategory] = useState<'short' | 'mid' | 'long'>('short');
+  const [selectedTip, setSelectedTip] = useState<string | null>(null);
+
+  const investmentTips = {
+    'Start Small': {
+      title: 'Start Small - Build Your Investment Foundation',
+      criteria: 'Start Small',
+      icon: '🌱',
+      investmentOptions: [
+        'Micro Investment Apps (Roshan Digital Account)',
+        'Mobile Banking Investment Plans',
+        'Prize Bonds (PKR 100)',
+        'Money Market Funds'
+      ],
+      expectedReturns: '5-8% initially, growing with experience',
+      minimumAmount: 'PKR 100 - PKR 5,000',
+      duration: '3-6 months to build confidence',
+      riskLevel: 'Very Low - Designed for beginners',
+      liquidity: 'Very High - Easy to access and withdraw',
+      description: 'Starting small is the best approach for student investors. This strategy allows you to learn the investment basics without risking large amounts. Begin with micro-investments through popular Pakistani apps and platforms, gradually increase your investment amount as you gain experience and confidence. This builds healthy financial habits and compound growth over time.',
+      benefits: [
+        'Learn investment fundamentals without major risks',
+        'Develop disciplined saving habits',
+        'Understand market dynamics gradually',
+        'Build confidence before larger investments',
+        'Compound interest works even with small amounts'
+      ],
+      tips: [
+        'Open accounts with government-backed platforms first',
+        'Use automatic investment plans (SIPs)',
+        'Track your investments monthly',
+        'Reinvest returns to maximize compound growth',
+        'Set realistic goals and review quarterly'
+      ]
+    },
+    'Diversify': {
+      title: 'Diversify - Spread Your Risk Intelligently',
+      criteria: 'Diversify',
+      icon: '🎯',
+      investmentOptions: [
+        'Mix of Fixed Deposits (40%)',
+        'Equity Mutual Funds (30%)',
+        'Gold or Commodities (20%)',
+        'Bonds or Government Securities (10%)'
+      ],
+      expectedReturns: '8-12% (blended average)',
+      minimumAmount: 'PKR 10,000-25,000 across platforms',
+      duration: '2-5 years for optimal diversification',
+      riskLevel: 'Low to Moderate - Balanced across assets',
+      liquidity: 'Medium - Mix of liquid and less liquid assets',
+      description: 'The golden rule of investing: never put all eggs in one basket. Diversification is the most effective way to manage investment risk. By spreading your money across different asset classes (stocks, bonds, gold, real estate), sectors, and time horizons, you protect yourself from market downturns in any single area. A well-diversified portfolio can weather market volatility and still generate steady returns.',
+      benefits: [
+        'Reduces overall portfolio risk significantly',
+        'Protects against sector-specific downturns',
+        'Provides steady returns across different conditions',
+        'Balances high-risk/high-reward with safe investments',
+        'Achieves multiple financial goals simultaneously'
+      ],
+      tips: [
+        'Follow the 40-30-20-10 rule for asset allocation',
+        'Rebalance portfolio every 6 months',
+        'Include both conventional and Islamic options',
+        'Consider inflation-protected investments',
+        'Review diversification based on changing goals'
+      ]
+    },
+    'Long-term Focus': {
+      title: 'Long-term Focus - Patience Pays Off',
+      criteria: 'Long-term Focus',
+      icon: '🚀',
+      investmentOptions: [
+        'PSX Stocks (7+ years)',
+        'Real Estate Investment (10+ years)',
+        'Pension Funds/VPS (20+ years)',
+        'Long-term Mutual Funds'
+      ],
+      expectedReturns: '12-18% annually (over long periods)',
+      minimumAmount: 'PKR 5,000-50,000 depending on asset',
+      duration: '7-20+ years for maximum returns',
+      riskLevel: 'Medium to High - Balanced with time horizon',
+      liquidity: 'Low to Very Low - Not meant for quick access',
+      description: 'Time is your greatest asset as a young investor. The longer you stay invested, the more compound interest works in your favor. Long-term investing means you can ride out market volatility and benefit from overall market growth. Historical data shows that investors who stay invested for 7+ years almost always see positive returns, regardless of short-term market fluctuations. This is the path to serious wealth building.',
+      benefits: [
+        'Compound interest becomes exponentially powerful',
+        'Weather market volatility with confidence',
+        'Benefit from economic growth over decades',
+        'Reduce stress by avoiding daily price watching',
+        'Potentially 2-5x your money in 10-15 years'
+      ],
+      tips: [
+        'Invest regularly with fixed monthly amounts (SIP)',
+        'Ignore short-term market noise and headlines',
+        'Reinvest all dividends and returns',
+        'Increase investment amount annually',
+        'Avoid panic selling during downturns',
+        'Review strategy every 2-3 years, not monthly'
+      ]
+    }
+  };
 
   const investmentCategories = {
     short: {
@@ -284,38 +390,114 @@ export const InvestmentOptions = () => {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Info className="w-5 h-5" />
-            <span>Investment Tips for Students</span>
+            <span>Smart Investment Tips for Students</span>
           </CardTitle>
+          <p className="text-sm text-gray-500 mt-2">Click on any tip to see detailed investment criteria and strategies</p>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <h4 className="font-semibold text-green-700 mb-2">Start Small</h4>
-              <ul className="text-sm text-gray-600 space-y-1">
-                <li>• Begin with PKR 1,000-5,000</li>
-                <li>• Use systematic investment plans</li>
-                <li>• Focus on regular savings first</li>
-                <li>• Learn before investing large amounts</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-blue-700 mb-2">Diversify</h4>
-              <ul className="text-sm text-gray-600 space-y-1">
-                <li>• Don't put all money in one place</li>
-                <li>• Mix different risk levels</li>
-                <li>• Consider Islamic vs conventional</li>
-                <li>• Balance liquidity needs</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-purple-700 mb-2">Long-term Focus</h4>
-              <ul className="text-sm text-gray-600 space-y-1">
-                <li>• Time in market beats timing market</li>
-                <li>• Compound interest is powerful</li>
-                <li>• Stay invested through volatility</li>
-                <li>• Review and adjust annually</li>
-              </ul>
-            </div>
+            {Object.entries(investmentTips).map(([key, tip]) => (
+              <Dialog key={key}>
+                <DialogTrigger asChild>
+                  <div className="cursor-pointer p-6 rounded-xl border-2 border-gray-200 hover:border-blue-500 transition-all duration-300 hover:shadow-lg hover:scale-105 bg-gradient-to-br from-white to-gray-50 hover:from-blue-50 hover:to-white">
+                    <div className="text-4xl mb-3">{tip.icon}</div>
+                    <h4 className="font-semibold text-gray-800 mb-3 text-lg">{key}</h4>
+                    <ul className="text-sm text-gray-600 space-y-1 mb-4">
+                      <li>• {tip.minimumAmount}</li>
+                      <li>• {tip.duration}</li>
+                      <li>• {tip.riskLevel}</li>
+                    </ul>
+                    <div className="text-xs font-bold text-blue-600 flex items-center gap-1 hover:gap-2 transition-all">
+                      Learn More <span>→</span>
+                    </div>
+                  </div>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-3 text-2xl">
+                      <span className="text-4xl">{tip.icon}</span>
+                      {tip.title}
+                    </DialogTitle>
+                    <DialogDescription className="text-base mt-2">
+                      Comprehensive guide to {tip.criteria.toLowerCase()} strategy
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  <div className="space-y-6 py-4">
+                    {/* Key Metrics */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                        <p className="text-xs font-semibold text-green-700 uppercase">Expected Returns</p>
+                        <p className="text-lg font-bold text-green-600 mt-1">{tip.expectedReturns}</p>
+                      </div>
+                      <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <p className="text-xs font-semibold text-blue-700 uppercase">Minimum Amount</p>
+                        <p className="text-lg font-bold text-blue-600 mt-1">{tip.minimumAmount}</p>
+                      </div>
+                      <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                        <p className="text-xs font-semibold text-purple-700 uppercase">Duration</p>
+                        <p className="text-lg font-bold text-purple-600 mt-1">{tip.duration}</p>
+                      </div>
+                      <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
+                        <p className="text-xs font-semibold text-orange-700 uppercase">Risk Level</p>
+                        <p className="text-lg font-bold text-orange-600 mt-1">{tip.riskLevel}</p>
+                      </div>
+                    </div>
+
+                    {/* Liquidity */}
+                    <div className="p-4 bg-cyan-50 rounded-lg border border-cyan-200">
+                      <p className="text-xs font-semibold text-cyan-700 uppercase mb-1">Liquidity</p>
+                      <p className="text-lg font-bold text-cyan-600">{tip.liquidity}</p>
+                    </div>
+
+                    {/* Description */}
+                    <div>
+                      <h4 className="font-semibold text-gray-800 mb-2">Overview</h4>
+                      <p className="text-sm text-gray-700 leading-relaxed">{tip.description}</p>
+                    </div>
+
+                    {/* Investment Options */}
+                    <div>
+                      <h4 className="font-semibold text-gray-800 mb-3">Recommended Investment Options</h4>
+                      <div className="grid grid-cols-1 gap-2">
+                        {tip.investmentOptions.map((option, idx) => (
+                          <div key={idx} className="p-3 bg-gray-100 rounded-lg flex items-center gap-2">
+                            <span className="text-lg">💼</span>
+                            <span className="text-sm font-medium text-gray-700">{option}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Benefits */}
+                    <div>
+                      <h4 className="font-semibold text-gray-800 mb-3">Key Benefits</h4>
+                      <div className="space-y-2">
+                        {tip.benefits.map((benefit, idx) => (
+                          <div key={idx} className="flex items-start gap-3 p-2">
+                            <span className="text-green-600 font-bold mt-1">✓</span>
+                            <span className="text-sm text-gray-700">{benefit}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Tips & Best Practices */}
+                    <div>
+                      <h4 className="font-semibold text-gray-800 mb-3">Tips & Best Practices</h4>
+                      <div className="space-y-2">
+                        {tip.tips.map((tipText, idx) => (
+                          <div key={idx} className="flex items-start gap-3 p-2 bg-blue-50 rounded">
+                            <span className="text-blue-600 font-bold">💡</span>
+                            <span className="text-sm text-gray-700">{tipText}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            ))}
           </div>
         </CardContent>
       </Card>

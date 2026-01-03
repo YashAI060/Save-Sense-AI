@@ -1,71 +1,61 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Building2, TrendingUp, Clock, Calculator, Smartphone, CreditCard } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 
+interface BankOption {
+  name: string;
+  rate: string;
+  type: string;
+}
+
 export const SavingOptions = () => {
   const [monthlyAmount, setMonthlyAmount] = useState(5000);
   const [duration, setDuration] = useState(12); // months
+  const [bankOptions, setBankOptions] = useState<BankOption[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const savingOptions = [
-    {
-      bank: 'EasyPaisa',
-      type: 'Mobile Wallet',
-      interestRate: 6.0,
-      color: 'green',
-      minAmount: 100,
-      category: 'digital',
-      features: ['No minimum balance', 'Mobile banking', 'Bill payments', 'Easy transfers']
-    },
-    {
-      bank: 'JazzCash',
-      type: 'Digital Wallet',
-      interestRate: 5.5,
-      color: 'red',
-      minAmount: 50,
-      category: 'digital',
-      features: ['Instant transfers', 'Mobile top-up', 'Utility bills', 'QR payments']
-    },
-    {
-      bank: 'HBL',
-      type: 'Student Account',
-      interestRate: 7.5,
-      color: 'blue',
+  // Fetch bank data from backend
+  useEffect(() => {
+    const fetchBankOptions = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/banks");
+        const data = await response.json();
+        setBankOptions(data);
+      } catch (error) {
+        console.error("Error fetching bank options:", error);
+        // Fallback to hardcoded data if API fails
+        setBankOptions([
+          {"name": "Meezan Bank", "rate": "18% (Halal)", "type": "Islamic"},
+          {"name": "HBL", "rate": "20.5%", "type": "Conventional"},
+          {"name": "EasyPaisa", "rate": "15%", "type": "Wallet"}
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBankOptions();
+  }, []);
+
+  // Convert API data to component format
+  const savingOptions = bankOptions.map((bank, index) => {
+    const colors = ['green', 'blue', 'red', 'purple', 'orange', 'indigo'];
+    const categories = ['islamic', 'traditional', 'digital'];
+    
+    return {
+      bank: bank.name,
+      type: bank.type,
+      interestRate: parseFloat(bank.rate.replace('%', '').replace(' (Halal)', '')),
+      color: colors[index % colors.length],
       minAmount: 1000,
-      category: 'traditional',
-      features: ['Student benefits', 'ATM network', 'Online banking', 'Debit card']
-    },
-    {
-      bank: 'UBL',
-      type: 'Youth Savings',
-      interestRate: 7.0,
-      color: 'purple',
-      minAmount: 500,
-      category: 'traditional',
-      features: ['Youth account', 'Low charges', 'Branch network', 'Digital banking']
-    },
-    {
-      bank: 'Meezan Bank',
-      type: 'Islamic Savings',
-      interestRate: 6.8,
-      color: 'orange',
-      minAmount: 1000,
-      category: 'islamic',
-      features: ['Shariah compliant', 'Profit sharing', 'Islamic banking', 'Halal investment']
-    },
-    {
-      bank: 'Allied Bank',
-      type: 'Regular Savings',
-      interestRate: 6.5,
-      color: 'indigo',
-      minAmount: 500,
-      category: 'traditional',
-      features: ['Wide network', 'Good support', 'Multiple products', 'Student friendly']
-    }
-  ];
+      category: categories[index % categories.length],
+      features: ['Online banking', 'Mobile app', 'Low fees']
+    };
+  });
 
   const calculateReturns = (principal: number, rate: number, months: number) => {
     const monthlyRate = rate / 100 / 12;
@@ -151,9 +141,9 @@ export const SavingOptions = () => {
                 </div>
               </div>
               <div className="p-4 bg-green-50 rounded-lg">
-                <div className="text-sm text-gray-600">Best Return ({bestOption.bank})</div>
+                <div className="text-sm text-gray-600">Best Return ({bestOption?.bank || 'Loading...'})</div>
                 <div className="text-2xl font-bold text-green-700">
-                  PKR {calculateReturns(monthlyAmount, bestOption.interestRate, duration).toLocaleString('en-PK')}
+                  {loading ? 'Loading...' : `PKR ${calculateReturns(monthlyAmount, bestOption?.interestRate || 0, duration).toLocaleString('en-PK')}`}
                 </div>
               </div>
             </div>
@@ -161,53 +151,64 @@ export const SavingOptions = () => {
         </CardContent>
       </Card>
 
+      {/* Loading State */}
+      {loading && (
+        <Card className="shadow-lg">
+          <CardContent className="p-6 text-center">
+            <div className="text-gray-600">Loading bank options...</div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Category Filters */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        <span className="text-sm font-medium text-gray-700">Filter by type:</span>
-        <div className="flex gap-2">
-          <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs flex items-center">
-            <Smartphone className="w-3 h-3 mr-1" />
-            Digital Wallets
-          </span>
-          <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs flex items-center">
-            <CreditCard className="w-3 h-3 mr-1" />
-            Traditional Banks
-          </span>
-          <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs flex items-center">
-            <Building2 className="w-3 h-3 mr-1" />
-            Islamic Banking
-          </span>
-        </div>
-      </div>
+      {!loading && (
+        <>
+          <div className="flex flex-wrap gap-2 mb-4">
+            <span className="text-sm font-medium text-gray-700">Filter by type:</span>
+            <div className="flex gap-2">
+              <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs flex items-center">
+                <Smartphone className="w-3 h-3 mr-1" />
+                Digital Wallets
+              </span>
+              <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs flex items-center">
+                <CreditCard className="w-3 h-3 mr-1" />
+                Traditional Banks
+              </span>
+              <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs flex items-center">
+                <Building2 className="w-3 h-3 mr-1" />
+                Islamic Banking
+              </span>
+            </div>
+          </div>
 
-      {/* Comparison Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {savingOptions.map((option, index) => {
-          const returns = calculateReturns(monthlyAmount, option.interestRate, duration);
-          const profit = returns - (monthlyAmount * duration);
-          const isBest = option.bank === bestOption.bank;
-          const CategoryIcon = getCategoryIcon(option.category);
+          {/* Comparison Cards */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {savingOptions.map((option, index) => {
+              const returns = calculateReturns(monthlyAmount, option.interestRate, duration);
+              const profit = returns - (monthlyAmount * duration);
+              const isBest = option.bank === bestOption.bank;
+              const CategoryIcon = getCategoryIcon(option.category);
 
-          return (
-            <Card 
-              key={index} 
-              className={cn(
-                "relative transition-all duration-200 hover:shadow-lg",
-                getColorClasses(option.color),
-                isBest && "ring-2 ring-green-400 ring-opacity-60"
-              )}
-            >
-              {isBest && (
-                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                    BEST RETURN
-                  </span>
-                </div>
-              )}
-              
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div>
+              return (
+                <Card 
+                  key={index} 
+                  className={cn(
+                    "relative transition-all duration-200 hover:shadow-lg",
+                    getColorClasses(option.color),
+                    isBest && "ring-2 ring-green-400 ring-opacity-60"
+                  )}
+                >
+                  {isBest && (
+                    <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
+                      <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                        BEST RETURN
+                      </span>
+                    </div>
+                  )}
+                  
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div>
                     <CardTitle className="text-lg">{option.bank}</CardTitle>
                     <p className="text-sm text-gray-600">{option.type}</p>
                   </div>
@@ -295,6 +296,8 @@ export const SavingOptions = () => {
           </div>
         </CardContent>
       </Card>
+        </>
+      )}
     </div>
   );
 };

@@ -59,10 +59,10 @@ export const Sidebar = ({ activeTab, onTabChange, isOpen, onClose }: SidebarProp
               <div className="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
                 <Target className="w-6 h-6 text-white" />
               </div>
-              <div>
-                <h1 className="text-xl font-bold text-white">PakSaver</h1>
-                <p className="text-green-100 text-sm">Smart Finance Tracker</p>
-              </div>
+                <div>
+                  <h1 className="text-xl font-bold text-white">Save Sense</h1>
+                  <p className="text-green-100 text-sm">Smart Finance Tracker</p>
+                </div>
             </div>
             <button
               onClick={onClose}
